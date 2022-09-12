@@ -1,7 +1,5 @@
 package com.example.cacaologin;
 
-import java.util.HashMap;
-
 import javax.servlet.http.HttpSession;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,29 +7,54 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.example.cacaologin.temp.KakaoTokenValidator;
+
 @RestController
 public class HomeController {
 
 	KakaoAPI kakaoApi = new KakaoAPI();
+	KakaoTokenValidator kakaoTokenValidator = new KakaoTokenValidator();
 
-	@RequestMapping(value = "/login")
+	@RequestMapping(value = "/oauth/callback/kakao")
 	public ModelAndView login(@RequestParam("code") String code, HttpSession session) {
 		ModelAndView mav = new ModelAndView();
-		// 1번 인증코드 요청 전달
-		String accessToken = kakaoApi.getAccessToken(code);
-		// 2번 인증코드로 토큰 전달
-		HashMap<String, Object> userInfo = kakaoApi.getUserInfo(accessToken);
-
-		System.out.println("login info : " + userInfo.toString());
-
-		if (userInfo.get("email") != null) {
-			session.setAttribute("userId", userInfo.get("email"));
-			session.setAttribute("accessToken", accessToken);
-		}
-		mav.addObject("userId", userInfo.get("email"));
+		System.out.println("code: " + code);
+		// // 1번 인증코드 요청 전달
+		// // String accessToken = kakaoApi.getAccessToken(code);
+		// String accessToken = kakaoTokenValidator.getAccessTokenFromCode(code);
+		// // 2번 인증코드로 토큰 전달
+		// HashMap<String, Object> userInfo = kakaoApi.getUserInfo(accessToken);
+		//
+		// System.out.println("login info : " + userInfo.toString());
+		//
+		// if (userInfo.get("email") != null) {
+		// 	session.setAttribute("userId", userInfo.get("email"));
+		// 	session.setAttribute("accessToken", accessToken);
+		// }
+		// mav.addObject("userId", userInfo.get("email"));
 		mav.setViewName("index");
 		return mav;
 	}
+
+	// @RequestMapping(value = "/login")
+	// public ModelAndView login(@RequestParam("code") String code, HttpSession session) {
+	// 	ModelAndView mav = new ModelAndView();
+	// 	System.out.println("code: " + code);
+	// 	// 1번 인증코드 요청 전달
+	// 	String accessToken = kakaoApi.getAccessToken(code);
+	// 	// 2번 인증코드로 토큰 전달
+	// 	HashMap<String, Object> userInfo = kakaoApi.getUserInfo(accessToken);
+	//
+	// 	System.out.println("login info : " + userInfo.toString());
+	//
+	// 	if (userInfo.get("email") != null) {
+	// 		session.setAttribute("userId", userInfo.get("email"));
+	// 		session.setAttribute("accessToken", accessToken);
+	// 	}
+	// 	mav.addObject("userId", userInfo.get("email"));
+	// 	mav.setViewName("index");
+	// 	return mav;
+	// }
 
 	@RequestMapping(value = "/logout")
 	public ModelAndView logout(HttpSession session) {
